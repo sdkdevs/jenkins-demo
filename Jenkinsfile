@@ -21,16 +21,14 @@ if (env.BRANCH_NAME == 'dev') {
         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
       ]]) {
-         ansiColor('xterm') {
-        sh "export AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID}"
-        sh "export AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY}"
-        
+        ansiColor('xterm') {
+        sh 'export AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID}'
+        sh 'export AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY}'
         echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
         sh 'make'
       }
     }
 }
-
 
   currentBuild.result = 'SUCCESS'
 }

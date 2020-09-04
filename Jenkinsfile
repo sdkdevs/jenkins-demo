@@ -23,11 +23,12 @@ if (env.BRANCH_NAME == 'dev') {
         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
       ]]) {
         ansiColor('xterm') {
-          sh 'terraform version'
           sh '''
                         export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
                         export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
                         '''
+                
+          sh 'make init'
         }
       }
     }

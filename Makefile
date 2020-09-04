@@ -17,9 +17,9 @@ endif
 REGIONS = $(sort $(foreach dir,$(shell find env/$(ENV) -type d ! -path env/$(ENV)),$(subst env/$(ENV)/,,$(dir))))
 DEFAULT_REGION = eu-central-1
 
-# ifeq ($(REGION),)
-# REGION := $(DEFAULT_REGION)
-# endif
+ifeq ($(REGION),)
+ REGION := $(DEFAULT_REGION)
+endif
 
 init:
 	terraform init -backend-config=./env/$(ENV)/$(REGION)/backend.conf -reconfigure

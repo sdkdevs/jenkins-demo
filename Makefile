@@ -22,17 +22,16 @@ DEFAULT_REGION = eu-central-1
 # endif
 
 init:
-	terraform init -backend-config=./env/$(ENV)/backend.conf -reconfigure
-	# @echo $(TERRAFORM_STATE_BUCKET_NAME)
-	# @echo $(ENVS)
-	# @echo $(REGIONS)
+	terraform init -backend-config=./env/$(ENV)/$(REGION)/backend.conf -reconfigure
+	@echo $(ENVS)
+	@echo $(dir)
 
 
 plan:
-	terraform plan --var-file=./env/$(ENV)/variables.tfvars
+	terraform plan --var-file=./env/$(ENV)/$(REGION)/variables.tfvars
 
 
 
 
 apply: plan		## Applies plan
-	terraform apply --auto-approve  -var-file=./env/$(ENV)/variables.tfvars
+	terraform apply --auto-approve  -var-file=./env/$(ENV)/$(REGION)/variables.tfvars

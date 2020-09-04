@@ -1,6 +1,6 @@
+// Jenkinsfile
 String prodCredentials = 'AWS_CREDENTIALS_PROD'
 String devCredentials = 'AWS_CREDENTIALS_DEV'
-
 
 try {
   stage('checkout') {
@@ -10,10 +10,11 @@ try {
     }
   }
 
+
 if (env.BRANCH_NAME == 'dev') {
 
   // Run terraform init
-  stage('Initialize Terraform') {
+  stage('Terraform Init - develop') {
     node {
       withCredentials([[
         $class: 'AmazonWebServicesCredentialsBinding',
@@ -22,13 +23,111 @@ if (env.BRANCH_NAME == 'dev') {
         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
       ]]) {
         ansiColor('xterm') {
-        sh 'export AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID}'
-        sh 'export AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY}'
-        echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
-        sh 'make'
+          sh 'terraform version'
+        }
       }
     }
+  }
+
+  // Run terraform plan
+  stage('Terraform Plan - de') {
+    node {
+      withCredentials([[
+        $class: 'AmazonWebServicesCredentialsBinding',
+        credentialsId: devCredentials,
+        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+      ]]) {
+        ansiColor('xterm') {
+          sh 'pwd'
+        }
+      }
+    }
+  }
+
+  // Run terraform plan
+  stage('Terraform Apply - dev') {
+    node {
+      withCredentials([[
+        $class: 'AmazonWebServicesCredentialsBinding',
+        credentialsId: devCredentials,
+        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+      ]]) {
+        ansiColor('xterm') {
+          sh 'ls'
+        }
+      }
+    }
+  }
 }
+
+if (env.BRANCH_NAME == 'master') {
+
+    // Run terraform init
+  stage('Terraform Init - prd') {
+    node {
+      withCredentials([[
+        $class: 'AmazonWebServicesCredentialsBinding',
+        credentialsId: prodCredentials,
+        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+      ]]) {
+        ansiColor('xterm') {
+          sh 'terraform init -backend-config=prd/backend.tf -reconfigure'
+        }
+      }
+    }
+  }
+
+    // Run terraform plan
+  stage('Terraform Plan - prd') {
+    node {
+      withCredentials([[
+        $class: 'AmazonWebServicesCredentialsBinding',
+        credentialsId: prodCredentials,
+        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+      ]]) {
+        ansiColor('xterm') {
+          sh 'terraform plan -var-file="prd/variables.tfvars"'
+        }
+      }
+    }
+  }
+
+    // Run terraform apply
+    stage('Terraform Apply - prd') {
+      node {
+        withCredentials([[
+          $class: 'AmazonWebServicesCredentialsBinding',
+          credentialsId: prodCredentials,
+          accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+          secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+        ]]) {
+          ansiColor('xterm') {
+            sh 'terraform apply -auto-approve -var-file="prd/variables.tfvars"'
+          }
+        }
+      }
+    }
+
+    // Run terraform show
+    stage('show') {
+      node {
+        withCredentials([[
+          $class: 'AmazonWebServicesCredentialsBinding',
+          credentialsId: prodCredentials,
+          accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+          secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+        ]]) {
+          ansiColor('xterm') {
+            sh 'terraform show'
+          }
+        }
+      }
+    }
+  }
   currentBuild.result = 'SUCCESS'
 }
 catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException flowError) {

@@ -24,13 +24,17 @@ if (env.BRANCH_NAME == 'dev') {
       ]]) {
         ansiColor('xterm') {
           sh 'terraform version'
+          sh '''
+                        export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+                        export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+                        '''
         }
       }
     }
   }
 
   // Run terraform plan
-  stage('Terraform Plan - de') {
+  stage('Terraform Plan - dev') {
     node {
       withCredentials([[
         $class: 'AmazonWebServicesCredentialsBinding',

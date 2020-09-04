@@ -29,7 +29,6 @@ if (env.BRANCH_NAME == 'dev') {
       }
     }
 }
-
   currentBuild.result = 'SUCCESS'
 }
 catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException flowError) {
@@ -44,6 +43,3 @@ finally {
     currentBuild.result = 'SUCCESS'
   }
 }
-
-
-

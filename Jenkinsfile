@@ -13,7 +13,7 @@ try {
 if (env.BRANCH_NAME == 'dev') {
 
   // Run terraform init
-  stage('Terraform Init - develop') {
+  stage('Initialize Terraform') {
     steps {
       withCredentials([[
         $class: 'AmazonWebServicesCredentialsBinding',
@@ -25,6 +25,8 @@ if (env.BRANCH_NAME == 'dev') {
         export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
         export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
         '''
+        echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
+        echo '${AWS_ACCESS_KEY_ID}'
         sh 'make'
       }
     }

@@ -15,18 +15,22 @@ try {
 
   // Run terraform init
   stage('Terraform Init - develop') {
-    node {
+    when {
+      branch 'dev'
+
+    }
+    steps {
       withCredentials([[
         $class: 'AmazonWebServicesCredentialsBinding',
         credentialsId: devCredentials,
         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-      ]]) {
-
-          echo devCredentials
-          echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
-          sh 'make'
-        }
+      ]]) 
+        sh '''
+        export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+        export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+        '''
+        sh 'make'
       }
     }
   }
@@ -44,3 +48,5 @@ finally {
     currentBuild.result = 'SUCCESS'
   }
 }
+
+

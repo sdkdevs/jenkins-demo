@@ -4,7 +4,7 @@ ACCOUNT_ID = $(shell aws sts get-caller-identity | jq -r '.Account')
 TERRAFORM_STATE_BUCKET_NAME = mfreccia-tfstate-$(ACCOUNT_ID)
 
 ENVS = $(sort $(foreach dir,$(shell find env -type d ! -path env -maxdepth 1),$(subst env/,,$(dir))))
-DEFAULT_ENV = dev
+DEFAULT_ENV = prd
 
 ifeq ($(ENV),)
 ENV := $(DEFAULT_ENV)

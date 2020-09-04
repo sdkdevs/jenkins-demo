@@ -26,7 +26,6 @@ if (env.BRANCH_NAME == 'dev') {
         export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
         '''
         echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
-        echo '${AWS_ACCESS_KEY_ID}'
         sh 'make'
       }
     }

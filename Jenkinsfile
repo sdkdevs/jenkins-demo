@@ -10,26 +10,28 @@ try {
     }
   }
 
-
-  if (env.BRANCH_NAME == 'dev') {
+if (env.BRANCH_NAME == 'dev') {
 
   // Run terraform init
-  stage('Terraform Init - develop') {
-    node {
+  stage('Initialize Terraform') {
+    steps {
       withCredentials([[
         $class: 'AmazonWebServicesCredentialsBinding',
         credentialsId: devCredentials,
         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-      ]]) {
-
-          echo devCredentials
-          echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
-          sh 'make'
-        }
+      ]]) 
+        sh '''
+        export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+        export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+        '''
+        echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
+        echo '${AWS_ACCESS_KEY_ID}'
+        sh 'make'
       }
     }
-  }
+}
+
   currentBuild.result = 'SUCCESS'
 }
 catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException flowError) {
@@ -44,3 +46,5 @@ finally {
     currentBuild.result = 'SUCCESS'
   }
 }
+
+

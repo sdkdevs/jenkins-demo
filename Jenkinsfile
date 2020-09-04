@@ -14,7 +14,7 @@ try {
 if (env.BRANCH_NAME == 'dev') {
 
   // Run terraform init
-  stage('Terraform Init - develop') {
+  stage('Terraform Init - DEV') {
     node {
       withCredentials([[
         $class: 'AmazonWebServicesCredentialsBinding',
@@ -22,7 +22,6 @@ if (env.BRANCH_NAME == 'dev') {
         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
       ]]) {
-        ansiColor('xterm') {
           sh '''
                         export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
                         export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
@@ -30,13 +29,12 @@ if (env.BRANCH_NAME == 'dev') {
 
                         make init
                         '''
-        }
       }
     }
   }
 
   // Run terraform plan
-  stage('Terraform Plan - dev') {
+  stage('Terraform Plan - DEV') {
     node {
       withCredentials([[
         $class: 'AmazonWebServicesCredentialsBinding',
@@ -44,9 +42,13 @@ if (env.BRANCH_NAME == 'dev') {
         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
       ]]) {
-        ansiColor('xterm') {
-          sh 'pwd'
-        }
+          sh '''
+                        export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+                        export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+                        export AWS_REGION=eu-central-1
+
+                        make plan
+                        '''
       }
     }
   }
@@ -60,9 +62,13 @@ if (env.BRANCH_NAME == 'dev') {
         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
       ]]) {
-        ansiColor('xterm') {
-          sh 'ls'
-        }
+          sh '''
+                        export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+                        export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+                        export AWS_REGION=eu-central-1
+
+                        make apply
+                        '''
       }
     }
   }
@@ -70,8 +76,8 @@ if (env.BRANCH_NAME == 'dev') {
 
 if (env.BRANCH_NAME == 'master') {
 
-    // Run terraform init
-  stage('Terraform Init - prd') {
+  // Run terraform init
+  stage('Terraform Init - Prod') {
     node {
       withCredentials([[
         $class: 'AmazonWebServicesCredentialsBinding',
@@ -79,15 +85,19 @@ if (env.BRANCH_NAME == 'master') {
         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
       ]]) {
-        ansiColor('xterm') {
-          sh 'terraform init -backend-config=prd/backend.tf -reconfigure'
-        }
+          sh '''
+                        export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+                        export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+                        export AWS_REGION=eu-central-1
+
+                        make init
+                        '''
       }
     }
   }
 
-    // Run terraform plan
-  stage('Terraform Plan - prd') {
+  // Run terraform plan
+  stage('Terraform Plan - Prod') {
     node {
       withCredentials([[
         $class: 'AmazonWebServicesCredentialsBinding',
@@ -95,45 +105,58 @@ if (env.BRANCH_NAME == 'master') {
         accessKeyVariable: 'AWS_ACCESS_KEY_ID',
         secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
       ]]) {
-        ansiColor('xterm') {
-          sh 'terraform plan -var-file="prd/variables.tfvars"'
-        }
+          sh '''
+                        export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+                        export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+                        export AWS_REGION=eu-central-1
+
+                        make plan
+                        '''
       }
     }
   }
 
-    // Run terraform apply
-    stage('Terraform Apply - prd') {
-      node {
-        withCredentials([[
-          $class: 'AmazonWebServicesCredentialsBinding',
-          credentialsId: prodCredentials,
-          accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-          secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-        ]]) {
-          ansiColor('xterm') {
-            sh 'terraform apply -auto-approve -var-file="prd/variables.tfvars"'
-          }
-        }
-      }
-    }
+  // Run terraform plan
+  stage('Terraform Apply - Prod') {
+    node {
+      withCredentials([[
+        $class: 'AmazonWebServicesCredentialsBinding',
+        credentialsId: prodCredentials,
+        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+      ]]) {
+          sh '''
+                        export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+                        export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+                        export AWS_REGION=eu-central-1
 
-    // Run terraform show
-    stage('show') {
-      node {
-        withCredentials([[
-          $class: 'AmazonWebServicesCredentialsBinding',
-          credentialsId: prodCredentials,
-          accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-          secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-        ]]) {
-          ansiColor('xterm') {
-            sh 'terraform show'
-          }
-        }
+                        make apply
+                        '''
       }
     }
   }
+
+  // Run terraform plan
+  stage('Terraform Show - Prod') {
+    node {
+      withCredentials([[
+        $class: 'AmazonWebServicesCredentialsBinding',
+        credentialsId: prodCredentials,
+        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+      ]]) {
+          sh '''
+                        export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+                        export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+                        export AWS_REGION=eu-central-1
+
+                        terraform show
+                        '''
+      }
+    }
+  }
+
+}
   currentBuild.result = 'SUCCESS'
 }
 catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException flowError) {

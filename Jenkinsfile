@@ -10,12 +10,10 @@ try {
     }
   }
 
+if (env.BRANCH_NAME == 'dev') {
+
   // Run terraform init
   stage('Terraform Init - develop') {
-    when {
-      branch 'dev'
-
-    }
     steps {
       withCredentials([[
         $class: 'AmazonWebServicesCredentialsBinding',
@@ -30,6 +28,8 @@ try {
         sh 'make'
       }
     }
+}
+
   currentBuild.result = 'SUCCESS'
 }
 catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException flowError) {

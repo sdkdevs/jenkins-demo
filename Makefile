@@ -14,7 +14,7 @@ ifeq ($(filter $(ENV),$(ENVS)),)
   $(error Invalid env "$(ENV)". Available envs are $(ENVS))
 endif
 
-# REGIONS = $(sort $(foreach dir,$(shell find env/$(ENV) -type d ! -path env/$(ENV)),$(subst env/$(ENV)/,,$(dir))))
+REGIONS = $(sort $(foreach dir,$(shell find env/$(ENV) -type d ! -path env/$(ENV)),$(subst env/$(ENV)/,,$(dir))))
 DEFAULT_REGION = eu-central-1
 
 # ifeq ($(REGION),)

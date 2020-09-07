@@ -17,7 +17,7 @@ pipeline {
                 branch 'dev'
             }
             stages {
-                stage("Terraform Init"){
+                stage("Init"){
                     steps{
                         withCredentials([[$class: 'AmazonWebServicesCredentialsBinding',credentialsId: devCredentials,accessKeyVariable: 'AWS_ACCESS_KEY_ID',secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
                         sh '''
@@ -30,7 +30,7 @@ pipeline {
                         }
                     }
                 }
-                stage("Terraform Plan"){
+                stage("Plan"){
                     steps{
                         withCredentials([[$class: 'AmazonWebServicesCredentialsBinding',credentialsId: devCredentials,accessKeyVariable: 'AWS_ACCESS_KEY_ID',secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
                         sh '''
@@ -38,11 +38,24 @@ pipeline {
                                 export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
                                 export AWS_REGION=eu-central-1
 
-                                make init ENV=dev
+                                make plan ENV=dev
                                 '''
                         }
                     }
                 }
+                stage("Apply"){
+                    steps{
+                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding',credentialsId: devCredentials,accessKeyVariable: 'AWS_ACCESS_KEY_ID',secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                        sh '''
+                                export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+                                export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+                                export AWS_REGION=eu-central-1
+
+                                make apply ENV=dev
+                                '''
+                        }
+                    }
+                }                
             }
         }
     }

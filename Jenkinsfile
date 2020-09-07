@@ -27,7 +27,7 @@ if (env.BRANCH_NAME == 'dev') {
                         export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
                         export AWS_REGION=eu-central-1
 
-                        make init
+                        make init ENV=dev
                         '''
       }
     }
@@ -47,7 +47,7 @@ if (env.BRANCH_NAME == 'dev') {
                         export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
                         export AWS_REGION=eu-central-1
 
-                        make plan
+                        make plan ENV=dev
                         '''
       }
     }
@@ -67,7 +67,7 @@ if (env.BRANCH_NAME == 'dev') {
                         export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
                         export AWS_REGION=eu-central-1
 
-                        make apply
+                        make apply ENV=dev
                         '''
       }
     }
@@ -90,7 +90,7 @@ if (env.BRANCH_NAME == 'master') {
                         export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
                         export AWS_REGION=eu-central-1
 
-                        make init
+                        make init ENV=prd
                         '''
       }
     }
@@ -110,7 +110,7 @@ if (env.BRANCH_NAME == 'master') {
                         export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
                         export AWS_REGION=eu-central-1
 
-                        make plan
+                        make plan ENV=prd
                         '''
       }
     }
@@ -130,7 +130,7 @@ if (env.BRANCH_NAME == 'master') {
                         export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
                         export AWS_REGION=eu-central-1
 
-                        make apply
+                        make apply ENV=prd
                         '''
       }
     }

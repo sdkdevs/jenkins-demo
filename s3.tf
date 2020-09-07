@@ -3,3 +3,5 @@ resource "aws_s3_bucket" "mfreccia_s3_bucket" {
   acl    = "private"
   tags = var.tags
 }
+
+resource "aws_instance" {}

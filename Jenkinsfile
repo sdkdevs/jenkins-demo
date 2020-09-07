@@ -6,8 +6,10 @@ pipeline{
     agent none
     stages{
         stage('checkout - source code'){
-            cleanWs()
-            checkout scm
+            step{
+                cleanWs()
+                checkout scm
+            }
         }
     }
 }

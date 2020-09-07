@@ -7,6 +7,7 @@ pipeline {
     stages {
         stage('Checkout - Source Code') {
             steps { 
+                cleanWs()
                 echo 'Hello World'
             }
         }

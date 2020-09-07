@@ -14,9 +14,7 @@ pipeline {
         }
         stage("Terraform Init"){
             when {
-                expression {
-                    env.BRANCH_NAME = 'dev'
-                }
+                branch 'dev'
             }
             steps{
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding',credentialsId: devCredentials,accessKeyVariable: 'AWS_ACCESS_KEY_ID',secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
@@ -27,7 +25,7 @@ pipeline {
 
                         make init ENV=dev
                         '''
-                }
+            }
             }
         }
     }
